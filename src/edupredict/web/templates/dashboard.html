@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - {{ app_name }}{% endblock %}
+{% block content %}
+  <h1>{{ app_name }}</h1>
+  <p class="sub">
+    Signed in as <strong>{{ user.username }}</strong> &middot; role
+    <span class="badge s-ok">{{ user.role_label }}</span>
+  </p>
+
+  <h2>Your access</h2>
+  <div class="panel">
+    <div class="row">
+      <strong>{{ user.role_label }}</strong>
+      <span class="sub">{{ purpose }}</span>
+    </div>
+    <p class="detail">
+      Role is read from the account store on every request, so a change applies
+      immediately without signing in again.
+    </p>
+  </div>
+
+  <h2>Permissions</h2>
+  <div class="panel">
+    {% if held_permissions %}
+      <ul>
+        {% for permission in held_permissions %}
+          <li><span><code>{{ permission }}</code></span></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="detail">{{ permission_note }}</p>
+    {% endif %}
+  </div>
+
+  <h2>Not yet implemented</h2>
+  <div class="panel">
+    <p class="detail">
+      This is the authentication and authorization surface only. Data ingestion,
+      HDFS storage, batch and real-time processing, analytics, machine-learning
+      models, Tableau dashboards, notifications and support are delivered in
+      later phases. No dataset, prediction or statistic is available yet.
+    </p>
+  </div>
+
+  <h2>Session</h2>
+  <div class="panel">
+    <form method="post" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit">Sign out</button>
+    </form>
+  </div>
+
+  <footer>
+    {% if user.role.value == 'administrator' %}
+      <a href="{{ url_for('auth.admin') }}">Administrator area</a> &middot;
+    {% endif %}
+    <a href="{{ url_for('web.index') }}">System status</a>
+  </footer>
+{% endblock %}

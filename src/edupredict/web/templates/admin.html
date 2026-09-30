@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Administrator - {{ app_name }}{% endblock %}
+{% block content %}
+  <h1>Administrator area</h1>
+  <p class="sub">
+    This page requires the <strong>Administrator</strong> role. Teachers,
+    Students and Analysts receive <code>403 Forbidden</code>.
+  </p>
+
+  <h2>Accounts</h2>
+  <div class="panel">
+    <ul>
+      {% for account in accounts %}
+        <li>
+          <span><strong>{{ account.username }}</strong>
+                <span class="badge s-ok">{{ account.role_label }}</span></span>
+          <span class="sub">created {{ account.created_at }}</span>
+        </li>
+      {% else %}
+        <li><span class="detail">No accounts exist yet.</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="panel">
+    <p class="detail">
+      Password hashes are never displayed. Only an account's username, role and
+      creation time are shown.
+    </p>
+  </div>
+
+  <div class="panel">
+    <p class="detail">
+      {{ permission_note }} Administrative capabilities such as user management
+      are therefore not offered yet.
+    </p>
+  </div>
+
+  <footer>
+    <a href="{{ url_for('auth.dashboard') }}">Back to dashboard</a>
+  </footer>
+{% endblock %}

@@ -1,0 +1,90 @@
+# EduPredict - application configuration (Phase 1 foundation)
+#
+# Precedence (lowest -> highest):
+#   1. built-in defaults in src/edupredict/config.py
+#   2. this file
+#   3. environment variables, e.g.  EDUPREDICT_APP__PORT=5050
+#      (prefix "EDUPREDICT_", section and key separated by a double underscore)
+#
+# Values are typed by the built-in defaults, so "5050" is read as an int.
+
+[app]
+name = "EduPredict"
+environment = "development"
+host = "127.0.0.1"
+port = 5000
+# Never enable debug in a deployed environment (NFR: Data Security).
+debug = false
+
+[logging]
+level = "INFO"
+# "console" | "file" | "both" | "none"
+target = "both"
+file = "logs/edupredict.log"
+max_bytes = 1048576
+backup_count = 5
+
+# ---------------------------------------------------------------------------
+# Authentication and Authorization
+# (document: "Implement a secure authentication system for users with different
+#  roles ... Define access controls to restrict data access based on user roles
+#  and responsibilities.")
+# ---------------------------------------------------------------------------
+[auth]
+# SQLite file holding the accounts (relative to the project root).
+# Passwords in this file are salted scrypt hashes, never plaintext.
+database_path = "var/auth/users.db"
+
+# SECRET KEY - LEAVE THIS EMPTY IN THE REPOSITORY.
+# The session cookie is signed with this value. Supply a real key through the
+# environment instead, which overrides this file:
+#     setx EDUPREDICT_AUTH__SECRET_KEY "<a long random string>"
+# Generate one with:  python -c "import secrets; print(secrets.token_hex(32))"
+# When this is empty the app uses an ephemeral random key and logs a warning:
+# sessions are still signed, but they stop working when the process restarts.
+secret_key = ""
+
+session_lifetime_minutes = 60
+csrf_protection = true
+max_login_failures = 5
+lockout_seconds = 300
+# Enable in any environment served over HTTPS.
+cookie_secure = false
+max_content_length = 16384
+
+# ---------------------------------------------------------------------------
+# HDFS - required by the document ("Utilize the Hadoop Distributed File System
+# for scalable and fault-tolerant storage"). Integration is performed through
+# the native `hdfs dfs` command line client shipped with Hadoop, therefore no
+# additional Python package is required.
+# ---------------------------------------------------------------------------
+[hdfs]
+enabled = true
+namenode_uri = "hdfs://localhost:9000"
+# Leave empty to auto-detect HADOOP_HOME / PATH.
+hadoop_home = ""
+cli = "hdfs"
+# HDFS is the system of record; data is partitioned under this root.
+base_path = "/user/edupredict"
+probe_timeout_seconds = 15
+
+# ---------------------------------------------------------------------------
+# Impala server - required by the document's software list. Reached through
+# `impala-shell` in the current phase; the exact integration method is an
+# open decision for the analytics phase (see docs/DECISIONS.md ADR-0004).
+# ---------------------------------------------------------------------------
+[impala]
+enabled = true
+host = "localhost"
+port = 21050
+database = "edupredict"
+user = "edupredict"
+cli = "impala-shell"
+probe_timeout_seconds = 15
+
+# ---------------------------------------------------------------------------
+# Local working root used for logs and for a local-filesystem fallback when
+# HDFS is unavailable during development. NO DATASET IS STORED HERE YET.
+# ---------------------------------------------------------------------------
+[storage]
+local_root = "var"

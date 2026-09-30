@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ app_name }} - Foundation{% endblock %}
+{% block content %}
+  <h1>{{ app_name }}</h1>
+  <p class="sub">
+    Educational Big Data and Predictive Analytics &middot;
+    v{{ version }} &middot; environment <code>{{ environment }}</code>
+  </p>
+
+  <div class="panel">
+    <div class="row">
+      <div>
+        {% if current_user %}
+          Signed in as <strong>{{ current_user.username }}</strong>
+          <span class="badge s-ok">{{ current_user.role_label }}</span>
+        {% else %}
+          <strong>Not signed in</strong>
+          <span class="sub">Authentication is required for the dashboard.</span>
+        {% endif %}
+      </div>
+      <div>
+        {% if current_user %}
+          <a href="{{ url_for('auth.dashboard') }}">Dashboard</a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}">Sign in</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <h2>System health</h2>
+  <div class="panel">
+    <div class="row">
+      <strong>Overall status</strong>
+      <span class="badge s-{{ status }}">{{ status }}</span>
+    </div>
+  </div>
+
+  {% for c in components %}
+  <div class="panel">
+    <div class="row">
+      <strong>{{ c.name }}</strong>
+      <span class="badge s-{{ c.status.value }}">{{ c.status.value }}</span>
+    </div>
+    <p class="detail">{{ c.detail }}</p>
+  </div>
+  {% endfor %}
+
+  <h2>Documented modules</h2>
+  <div class="panel">
+    <ul>
+      {% for m in modules %}
+      <li><span>{{ m.label }}</span><span class="sub">{{ m.description }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <footer>
+    Phase 2 &mdash; authentication, authorization and the four documented roles are
+    implemented. No dataset, model or business module is implemented yet.
+    JSON health report: <a href="/health">/health</a>
+  </footer>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Sign in - {{ app_name }}{% endblock %}
+{% block content %}
+  <h1>Sign in</h1>
+  <p class="sub">
+    Access to {{ app_name }} requires an account with one of the four documented roles.
+  </p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="panel">
+        <ul>
+          {% for category, message in messages %}
+            <li><span class="badge {{ 's-bad' if category == 'error' else 's-ok' }}">{{ category }}</span>
+                <span class="detail">{{ message }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="panel">
+    <form method="post" action="{{ url_for('auth.login', next=next_target) }}">
+      <input type="hidden" name="next" value="{{ next_target }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" value="{{ username }}"
+             autocomplete="username" required autofocus
+             {% if locked %}disabled{% endif %}>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password"
+             autocomplete="current-password" required
+             {% if locked %}disabled{% endif %}>
+
+      <button type="submit" {% if locked %}disabled{% endif %}>Sign in</button>
+    </form>
+  </div>
+
+  {% if locked %}
+    <div class="panel">
+      <p class="detail">
+        This account is temporarily locked after repeated failed sign-in attempts.
+        Try again later.
+      </p>
+    </div>
+  {% endif %}
+
+  <div class="panel">
+    <p class="detail">
+      Accounts are created by an operator from the command line
+      (<code>python -m edupredict user create</code>). No credentials are stored
+      in this repository.
+    </p>
+  </div>
+
+  <footer>
+    <a href="{{ url_for('web.index') }}">Back to status</a>
+  </footer>
+{% endblock %}

@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edupredict"
+version = "0.1.0"
+description = "EduPredict - Educational Big Data and Predictive Analytics system"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [{ name = "EduPredict Team" }]
+
+# Runtime dependencies are kept intentionally minimal.
+#   flask    - serves the documented "website" deliverable.
+#   werkzeug - already a hard dependency of Flask; declared explicitly because
+#              Phase 2 imports werkzeug.security directly for password hashing.
+# Neither Hadoop nor Impala needs a Python package: both are reached through
+# their native command line clients.
+dependencies = [
+    "flask>=3.0,<4.0",
+    "werkzeug>=3.0,<4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+edupredict = "edupredict.__main__:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+edupredict = ["web/templates/*.html"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q --strict-markers"
